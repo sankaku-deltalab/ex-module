@@ -1,7 +1,7 @@
 {
-  "name": "",
+  "name": "ex-module",
   "version": "0.0.0",
-  "description": "",
+  "description": "Forbidden dark Elixir of a alchemist",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
   "files": [
