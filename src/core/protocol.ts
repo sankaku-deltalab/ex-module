@@ -22,7 +22,6 @@ class ExProtocolImplClass<
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ExProtocol {
   export const accumulate = <
     Protocol,

@@ -29,7 +29,6 @@ export const verifyExModuleForStruct = <
   // do nothing because this function is used for type check
 };
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ExStructDef {
   export const isInstance =
     <Struct extends ExStruct<string>>(mod: ExModule<string>) =>
