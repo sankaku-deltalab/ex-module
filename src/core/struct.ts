@@ -9,10 +9,12 @@ export type ExModuleForStruct<
   ModId extends string,
   RawStructure extends {}
 > = ExModule<ModId> & {
-  isInstance: (
-    maybeStruct: unknown
-  ) => maybeStruct is ExStruct<ModId, RawStructure>;
-  gen: (v: RawStructure) => ExStruct<ModId, RawStructure>;
+  __meta__: {
+    isInstance: (
+      maybeStruct: unknown
+    ) => maybeStruct is ExStruct<ModId, RawStructure>;
+    gen: (v: RawStructure) => ExStruct<ModId, RawStructure>;
+  };
 };
 
 export type DefExStruct<ModId extends string, St extends {}> = {
@@ -30,7 +32,16 @@ export const verifyExModuleForStruct = <
 };
 
 export namespace ExStructDef {
-  export const isInstance =
+  export const meta = <ModId extends string, Struct extends ExStruct<ModId>>(
+    mod: ExModule<ModId>
+  ) => {
+    return {
+      gen: gen<ModId, Struct>(mod),
+      isInstance: isInstance<Struct>(mod),
+    };
+  };
+
+  const isInstance =
     <Struct extends ExStruct<string>>(mod: ExModule<string>) =>
     (maybeStruct: unknown): maybeStruct is Struct => {
       return (
@@ -41,14 +52,14 @@ export namespace ExStructDef {
       );
     };
 
-  export const gen =
-    <ModId extends string, Structure extends ExStruct<ModId>>(
+  const gen =
+    <ModId extends string, Struct extends ExStruct<ModId>>(
       mod: ExModule<ModId>
     ) =>
-    (v: Omit<Structure, '__exStruct__'>): Structure => {
+    (v: Omit<Struct, '__exStruct__'>): Struct => {
       return {
         ...v,
         __exStruct__: mod.__exModule__,
-      } as Structure;
+      } as Struct;
     };
 }

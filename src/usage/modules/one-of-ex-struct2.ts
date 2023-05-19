@@ -10,12 +10,11 @@ type ModId = typeof modId;
 
 export namespace OneOfExStruct2 {
   export const __exModule__ = modId;
-  export const isInstance = ExStructDef.isInstance<T>(OneOfExStruct2);
-  export const gen = ExStructDef.gen<ModId, T>(OneOfExStruct2);
+  export const __meta__ = ExStructDef.meta<ModId, T>(OneOfExStruct2);
   export type T = DefExStruct<ModId, {greed: string}>;
 
   export function create(greed: string): T {
-    return gen({greed});
+    return __meta__.gen({greed});
   }
 }
 verifyExModuleForStruct<ModId, OneOfExStruct2.T>(OneOfExStruct2);
