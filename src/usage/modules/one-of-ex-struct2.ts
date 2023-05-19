@@ -2,13 +2,12 @@ import {
   DefExStruct,
   ExStructDef,
   verifyExModuleForStruct,
-} from '../core/struct';
-import {SayProtocol} from './say';
+} from '../../core/struct';
+import {SayProtocol} from '../protocols/say';
 
-const modId = 'MyApp.OneOfExStruct2';
+const modId = 'MyApp.Modules.OneOfExStruct2';
 type ModId = typeof modId;
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace OneOfExStruct2 {
   export const __exModule__ = modId;
   export const isInstance = ExStructDef.isInstance<T>(OneOfExStruct2);
