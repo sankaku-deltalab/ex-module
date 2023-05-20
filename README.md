@@ -112,6 +112,8 @@ export const Say = ExProtocol.accumulate({
   [OneOfExStruct2.__exModule__]: new ImplSayForOneOfExS2(),
 });
 
+export const Saiable = OneOfExStruct.T | OneOfExStruct2.T;
+
 // modules/one-of-ex-struct.ts
 import {
   DefExStruct,
@@ -183,6 +185,6 @@ console.log(Say.of(cat).say(cat));
 const dog = OneOfExStruct2.create('Wan');
 console.log(Say.of(dog).say(dog));
 
-const dogOrCat: OneOfExStruct.T | OneOfExStruct2.T = cat;
+const dogOrCat: Saiable = cat;
 console.log(Say.of(dogOrCat).say(dogOrCat));
 ```

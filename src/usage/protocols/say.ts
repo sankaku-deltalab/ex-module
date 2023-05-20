@@ -14,3 +14,5 @@ export const Say = ExProtocol.accumulate({
   [OneOfExStruct.__exModule__]: new ImplSayForOneOfExS(),
   [OneOfExStruct2.__exModule__]: new ImplSayForOneOfExS2(),
 });
+
+export type Saiable = OneOfExStruct.T | OneOfExStruct2.T;
