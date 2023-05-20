@@ -1,6 +1,6 @@
 # ExModule
 
-Forbidden dark Elixir of a alchemist
+Forbidden dark Elixir of an alchemist
 
 ## Usage
 
