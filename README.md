@@ -2,6 +2,10 @@
 
 Forbidden dark Elixir of an alchemist
 
+## Motivation
+
+Replicate the module system of [Elixir](https://elixir-lang.org) to achieve polymorphism in a serializable state.
+
 ## Usage
 
 ### defmodule
