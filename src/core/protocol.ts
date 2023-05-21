@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {ExStruct} from './struct';
 
 export namespace ExProtocol {
@@ -10,6 +11,6 @@ export namespace ExProtocol {
         const impl: Record<FuncName, Function> = impls[v.__exStruct__] as any;
         return impl[funcName](v, ...args);
       };
-      return f as any as Protocol[FuncName];
+      return f as Protocol[FuncName];
     };
 }

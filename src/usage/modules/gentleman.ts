@@ -21,8 +21,8 @@ ExStructDef.verify<Gentleman.T>(Gentleman);
 // defimpl ------
 type T = Gentleman.T;
 export class ImplSayForGentleman implements SayProtocol<T> {
-  greet<S extends T>(v: S, _target: string): S {
-    console.log(`${v.greed}, Sir.`);
+  greet<S extends T>(v: S, target: string): S {
+    console.log(`${v.greed}, Sir ${target}.`);
     return v;
   }
 }

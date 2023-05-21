@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {ExModule} from './module';
 
 export type ExStruct<
@@ -42,13 +43,8 @@ export namespace ExStructDef {
 
   const isInstance =
     <Struct extends ExStruct<string>>(mod: ExModule<string>) =>
-    (maybeStruct: unknown): maybeStruct is Struct => {
-      return (
-        typeof maybeStruct === 'object' &&
-        maybeStruct !== null &&
-        '__exStruct__' in maybeStruct &&
-        maybeStruct['__exStruct__'] === mod.__exModule__
-      );
+    (maybeStruct: any): maybeStruct is Struct => {
+      return maybeStruct['__exStruct__'] === mod.__exModule__;
     };
 
   const gen =
