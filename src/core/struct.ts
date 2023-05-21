@@ -18,25 +18,24 @@ export type ExModuleForStruct<
 };
 
 export namespace ExStructDef {
+  type ModIdOf<S extends ExStruct> = S['__exStruct__'];
+
   export type DefExStruct<ModId extends string, St extends {}> = {
     __exStruct__: ModId;
   } & St;
 
-  export const meta = <ModId extends string, Struct extends ExStruct<ModId>>(
-    mod: ExModule<ModId>
+  export const meta = <Struct extends ExStruct>(
+    mod: ExModule<ModIdOf<Struct>>
   ) => {
     return {
-      gen: gen<ModId, Struct>(mod),
+      gen: gen<ModIdOf<Struct>, Struct>(mod),
       isInstance: isInstance<Struct>(mod),
     };
   };
 
-  export const verify = <
-    ModId extends string,
-    Structure extends ExStruct<ModId>
-  >(
+  export const verify = <Struct extends ExStruct>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mod: ExModuleForStruct<ModId, Structure>
+    mod: ExModuleForStruct<ModIdOf<Struct>, Struct>
   ): void => {
     // do nothing because this function is used for type check
   };
