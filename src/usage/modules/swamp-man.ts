@@ -1,8 +1,4 @@
-import {
-  DefExStruct,
-  ExStructDef,
-  verifyExModuleForStruct,
-} from '../../core/struct';
+import {ExStructDef} from '../../core/struct';
 import {SayProtocol} from '../protocols/say';
 
 const modId = 'MyApp.Modules.SwampMan';
@@ -11,7 +7,7 @@ type ModId = typeof modId;
 export namespace SwampMan {
   export const __exModule__ = modId;
   export const __meta__ = ExStructDef.meta<ModId, T>(SwampMan);
-  export type T = DefExStruct<ModId, {name: string}>;
+  export type T = ExStructDef.DefExStruct<ModId, {name: string}>;
 
   export function create(name: string): T {
     return __meta__.gen({name});
@@ -24,4 +20,4 @@ export namespace SwampMan {
     }
   }
 }
-verifyExModuleForStruct<ModId, SwampMan.T>(SwampMan);
+ExStructDef.verify<ModId, SwampMan.T>(SwampMan);

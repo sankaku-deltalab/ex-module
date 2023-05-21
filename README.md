@@ -17,19 +17,20 @@ end
 
 ```typescript
 // modules/example-module.ts
-import {verifyExModule} from 'ex-module';
+import {ExModuleDef} from 'ex-module';
 
-const modId = 'MyApp.Modules.ExampleModule';
-type ModId = typeof modId;
-
+// defmodule ------
 export namespace ExampleModule {
-  export const __exModule__ = modId;
+  export const __exModule__ = 'MyApp.Modules.ExampleModule';
 
   export function greet(name: string): string {
     return `Hi ${name}.`;
   }
 }
-verifyExModule<ModId>(ExampleModule);
+ExModuleDef.verify(ExampleModule);
+
+// use module ------
+console.log(ExampleModule.greet('Me'));
 ```
 
 ### defstruct
@@ -47,15 +48,16 @@ end
 
 ```typescript
 // modules/example-struct.ts
-import {verifyExModule} from 'ex-module';
+import {ExStructDef} from 'ex-module';
 
+// defmodule, defstruct ------
 const modId = 'MyApp.Modules.ExampleStruct';
 type ModId = typeof modId;
 
 export namespace ExampleStruct {
   export const __exModule__ = modId;
   export const __meta__ = ExStructDef.meta<ModId, T>(ExampleStruct);
-  export type T = DefExStruct<ModId, {name: string}>;
+  export type T = ExStructDef.DefExStruct<ModId, {name: string}>;
 
   export function create(name: string): T {
     return __meta__.gen({name});
@@ -65,7 +67,11 @@ export namespace ExampleStruct {
     return `Hi ${name}.`;
   }
 }
-verifyExModuleForStruct<ModId, ExampleStruct.T>(ExampleStruct);
+ExStructDef.verify<ModId, ExampleStruct.T>(ExampleStruct);
+
+// use module ------
+const me = ExampleStruct.create('Me');
+console.log(ExampleStruct.greet(me));
 ```
 
 ### defprotocol, defimpl
@@ -77,19 +83,23 @@ defprotocol Say do
   def say(v)
 end
 
-defmodule OneOfExStruct do
-  defstruct [:name]
+defmodule Gentleman do
+  defstruct [:greet]
 
-  defimpl Say, for: OneOfExStruct do
-    def say(%OneOfExStruct{name}), do: 'Im ' <> name;
+  defimpl Say, for: Gentleman do
+    def greet(%Gentleman{name}, target), do
+      IO.inspect("#{greed}, Sir.")
+    end
   end
 end
 
-defmodule OneOfExStruct2 do
-  defstruct [:greet]
+defmodule SwampMan do
+  defstruct [:name]
 
-  defimpl Say, for: OneOfExStruct2 do
-    def say(%OneOfExStruct2{greet}), do: greet <> " Sir.";
+  defimpl Say, for: SwampMan do
+    def greet(%SwampMan{name}, target) do
+      IO.inspect("Hello #{target}. Im #{name}.")
+    end
   end
 end
 ```
@@ -177,8 +187,6 @@ verifyExModuleForStruct<ModId, SwampMan.T>(SwampMan);
 import {Gentleman} from './modules/gentleman';
 import {SwampMan} from './modules/swamp-man';
 import {Say} from './protocols/say';
-
-console.log(ExampleModule.greet('Me'));
 
 const gentleman = Gentleman.create('Hello');
 const newGentleman = Say.say(gentleman, 'unknown human');

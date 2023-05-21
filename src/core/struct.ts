@@ -17,21 +17,11 @@ export type ExModuleForStruct<
   };
 };
 
-export type DefExStruct<ModId extends string, St extends {}> = {
-  __exStruct__: ModId;
-} & St;
-
-export const verifyExModuleForStruct = <
-  ModId extends string,
-  Structure extends ExStruct<ModId>
->(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  mod: ExModuleForStruct<ModId, Structure>
-): void => {
-  // do nothing because this function is used for type check
-};
-
 export namespace ExStructDef {
+  export type DefExStruct<ModId extends string, St extends {}> = {
+    __exStruct__: ModId;
+  } & St;
+
   export const meta = <ModId extends string, Struct extends ExStruct<ModId>>(
     mod: ExModule<ModId>
   ) => {
@@ -39,6 +29,16 @@ export namespace ExStructDef {
       gen: gen<ModId, Struct>(mod),
       isInstance: isInstance<Struct>(mod),
     };
+  };
+
+  export const verify = <
+    ModId extends string,
+    Structure extends ExStruct<ModId>
+  >(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mod: ExModuleForStruct<ModId, Structure>
+  ): void => {
+    // do nothing because this function is used for type check
   };
 
   const isInstance =
