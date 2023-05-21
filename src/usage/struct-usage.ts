@@ -16,7 +16,7 @@ export namespace ExampleStruct {
     return __meta__.gen({name});
   }
 
-  export function greet({name}: ExampleStruct.T): string {
+  export function greet({name}: T): string {
     return `Hi ${name}.`;
   }
 }
