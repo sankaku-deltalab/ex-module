@@ -15,5 +15,5 @@ export namespace Say {
     [Gentleman.__exModule__]: new Gentleman.ImplSay(),
   });
 
-  export const say = accumulate('greet');
+  export const greet = accumulate('greet');
 }
