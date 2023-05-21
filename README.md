@@ -55,23 +55,26 @@ end
 import {ExStructDef} from 'ex-module';
 
 // defmodule, defstruct ------
-const modId = 'MyApp.Modules.ExampleStruct';
-type ModId = typeof modId;
-
 export namespace ExampleStruct {
-  export const __exModule__ = modId;
-  export const __meta__ = ExStructDef.meta<ModId, T>(ExampleStruct);
-  export type T = ExStructDef.DefExStruct<ModId, {name: string}>;
+  export const __exModule__ = 'MyApp.Modules.ExampleStruct';
+  export const __meta__ = ExStructDef.meta<T>(ExampleStruct);
+
+  export type T = ExStructDef.DefExStruct<
+    typeof __exModule__,
+    {
+      name: string;
+    }
+  >;
 
   export function create(name: string): T {
     return __meta__.gen({name});
   }
 
-  export function greet({name}: ExampleStruct.T): string {
+  export function greet({name}: T): string {
     return `Hi ${name}.`;
   }
 }
-ExStructDef.verify<ModId, ExampleStruct.T>(ExampleStruct);
+ExStructDef.verify<ExampleStruct.T>(ExampleStruct);
 
 // use module ------
 const me = ExampleStruct.create('Me');
@@ -111,81 +114,96 @@ end
 ```typescript
 // protocols/say.ts
 import {ExProtocol, ExStruct} from 'ex-module';
-import {SwampMan} from '../modules/swamp-man';
-import {Gentleman} from '../modules/gentleman';
+import {ImplSayForSwampMan, SwampMan} from '../modules/swamp-man';
+import {Gentleman, ImplSayForGentleman} from '../modules/gentleman';
 
 export interface SayProtocol<Base extends ExStruct> {
+  /**
+   * Play greeting and update self.
+   *
+   * @param v Self.
+   * @param target Greeting target.
+   */
   greet<S extends Base>(v: S, target: string): S;
 }
 
 export namespace Say {
   export type T = SwampMan.T | Gentleman.T;
 
-  const accumulate = ExProtocol.accumulate<SayProtocol<T>>({
-    [SwampMan.__exModule__]: new SwampMan.ImplSay(),
-    [Gentleman.__exModule__]: new Gentleman.ImplSay(),
+  const genMethod = ExProtocol.accumulate<SayProtocol<T>>({
+    [SwampMan.__exModule__]: new ImplSayForSwampMan(),
+    [Gentleman.__exModule__]: new ImplSayForGentleman(),
   });
 
-  export const say = accumulate('greet');
+  /**
+   * Play greeting and update self.
+   *
+   * @param v Self.
+   * @param target Greeting target.
+   */
+  export const greet = genMethod('greet');
 }
 
 // modules/gentleman.ts
-import {
-  DefExStruct,
-  ExStructDef,
-  verifyExModuleForStruct,
-} from 'ex-module';
+import {ExStructDef} from 'ex-module';
 import {SayProtocol} from '../protocols/say';
 
-const modId = 'MyApp.Modules.Gentleman';
-type ModId = typeof modId;
-
 export namespace Gentleman {
-  export const __exModule__ = modId;
-  export const __meta__ = ExStructDef.meta<ModId, T>(Gentleman);
-  export type T = DefExStruct<ModId, {greed: string}>;
+  export const __exModule__ = 'MyApp.Modules.Gentleman';
+  export const __meta__ = ExStructDef.meta<T>(Gentleman);
+
+  export type T = ExStructDef.DefExStruct<
+    typeof __exModule__,
+    {
+      greed: string;
+    }
+  >;
 
   export function create(greed: string): T {
     return __meta__.gen({greed});
   }
+}
+ExStructDef.verify<Gentleman.T>(Gentleman);
 
-  export class ImplSay implements SayProtocol<T> {
-    greet<S extends T>(v: S, _target: string): S {
-      console.log(`${v.greed}, Sir.`);
-      return v;
-    }
+// defimpl ------
+type T = Gentleman.T;
+export class ImplSayForGentleman implements SayProtocol<T> {
+  greet<S extends T>(v: S, target: string): S {
+    console.log(`${v.greed}, Sir ${target}.`);
+    return v;
   }
 }
-verifyExModuleForStruct<ModId, Gentleman.T>(Gentleman);
 
 // modules/swamp-man.ts
-import {
-  DefExStruct,
-  ExStructDef,
-  verifyExModuleForStruct,
-} from 'ex-module';
+import {ExStructDef} from 'ex-module';
 import {SayProtocol} from '../protocols/say';
 
-const modId = 'MyApp.Modules.SwampMan';
-type ModId = typeof modId;
-
 export namespace SwampMan {
-  export const __exModule__ = modId;
-  export const __meta__ = ExStructDef.meta<ModId, T>(SwampMan);
-  export type T = DefExStruct<ModId, {name: string}>;
+  export const __exModule__ = 'MyApp.Modules.SwampMan';
+  export const __meta__ = ExStructDef.meta<T>(SwampMan);
+
+  export type T = ExStructDef.DefExStruct<
+    typeof __exModule__,
+    {
+      name: string;
+    }
+  >;
 
   export function create(name: string): T {
     return __meta__.gen({name});
   }
+}
+ExStructDef.verify<SwampMan.T>(SwampMan);
 
-  export class ImplSay implements SayProtocol<T> {
-    greet<S extends T>(v: S, target: string): S {
-      console.log(`Hello ${target}. Im ${v.name}.`);
-      return {...v, name: target};
-    }
+// defimpl ------
+type T = SwampMan.T;
+export class ImplSayForSwampMan implements SayProtocol<T> {
+  greet<S extends T>(v: S, target: string): S {
+    console.log(`Hello ${target}. Im ${v.name}.`);
+    return {...v, name: target};
   }
 }
-verifyExModuleForStruct<ModId, SwampMan.T>(SwampMan);
+
 
 // usage.ts
 import {Gentleman} from './modules/gentleman';
@@ -193,11 +211,14 @@ import {SwampMan} from './modules/swamp-man';
 import {Say} from './protocols/say';
 
 const gentleman = Gentleman.create('Hello');
-const newGentleman = Say.say(gentleman, 'unknown human');
+const newGentleman = Say.greet(gentleman, 'unknown human');
+console.log(newGentleman);
 
 const swampMan = SwampMan.create('mud');
-const newSwampMan = Say.say(swampMan, 'gentleman');
+const newSwampMan = Say.greet(swampMan, 'gentleman');
+console.log(newSwampMan);
 
 const anyMan: Say.T = swampMan as Say.T;
-const newAnyMan = Say.say(anyMan, 'who');
+const newAnyMan = Say.greet(anyMan, 'who');
+console.log(newAnyMan);
 ```
