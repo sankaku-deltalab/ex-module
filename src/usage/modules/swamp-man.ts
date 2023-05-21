@@ -12,12 +12,13 @@ export namespace SwampMan {
   export function create(name: string): T {
     return __meta__.gen({name});
   }
-
-  export class ImplSay implements SayProtocol<T> {
-    greet<S extends T>(v: S, target: string): S {
-      console.log(`Hello ${target}. Im ${v.name}.`);
-      return {...v, name: target};
-    }
-  }
 }
 ExStructDef.verify<ModId, SwampMan.T>(SwampMan);
+
+type T = SwampMan.T;
+export class ImplSayForSwampMan implements SayProtocol<T> {
+  greet<S extends T>(v: S, target: string): S {
+    console.log(`Hello ${target}. Im ${v.name}.`);
+    return {...v, name: target};
+  }
+}

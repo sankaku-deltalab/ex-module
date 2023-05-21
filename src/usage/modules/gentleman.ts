@@ -12,12 +12,13 @@ export namespace Gentleman {
   export function create(greed: string): T {
     return __meta__.gen({greed});
   }
-
-  export class ImplSay implements SayProtocol<T> {
-    greet<S extends T>(v: S, _target: string): S {
-      console.log(`${v.greed}, Sir.`);
-      return v;
-    }
-  }
 }
 ExStructDef.verify<ModId, Gentleman.T>(Gentleman);
+
+type T = Gentleman.T;
+export class ImplSayForGentleman implements SayProtocol<T> {
+  greet<S extends T>(v: S, _target: string): S {
+    console.log(`${v.greed}, Sir.`);
+    return v;
+  }
+}
