@@ -1,15 +1,15 @@
 import {ExampleModule} from './modules/example-module';
-import {OneOfExStruct} from './modules/one-of-ex-struct';
-import {OneOfExStruct2} from './modules/one-of-ex-struct2';
-import {Saiable, Say} from './protocols/say';
+import {Gentleman} from './modules/gentleman';
+import {SwampMan} from './modules/swamp-man';
+import {Say} from './protocols/say';
 
 console.log(ExampleModule.greet('Me'));
 
-const cat = OneOfExStruct.create('souseki');
-console.log(Say.of(cat).say(cat));
+const gentleman = Gentleman.create('Hello');
+const newGentleman = Say.say(gentleman, 'unknown human');
 
-const dog = OneOfExStruct2.create('Wan');
-console.log(Say.of(dog).say(dog));
+const swampMan = SwampMan.create('mud');
+const newSwampMan = Say.say(swampMan, 'gentleman');
 
-const dogOrCat: Saiable = cat;
-console.log(Say.of(dogOrCat).say(dogOrCat));
+const anyMan: Say.T = swampMan as Say.T;
+const newAnyMan = Say.say(anyMan, 'who');

@@ -1,7 +1,7 @@
 import {ExModule} from './module';
 
 export type ExStruct<
-  ModId extends string = string,
+  ModId extends string = any,
   RawStructure extends {} = {}
 > = RawStructure & {__exStruct__: ModId};
 

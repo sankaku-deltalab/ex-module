@@ -1,34 +1,15 @@
 import {ExStruct} from './struct';
 
-export interface ExProtocolImpl<
-  Protocol,
-  Implements extends Record<string, Protocol>
-> {
-  of<ModId extends string & keyof Implements>(
-    s: ExStruct<ModId>
-  ): Implements[ModId];
-}
-
-class ExProtocolImplClass<
-  Protocol,
-  Implements extends Record<string, Protocol>
-> {
-  constructor(private readonly impls: Implements) {}
-
-  of<ModId extends string & keyof Implements>(
-    s: ExStruct<ModId>
-  ): Implements[ModId] {
-    return this.impls[s.__exStruct__];
-  }
-}
-
 export namespace ExProtocol {
-  export const accumulate = <
-    Protocol,
-    Implements extends Record<string, Protocol>
-  >(
-    impls: Implements
-  ): ExProtocolImpl<Protocol, Implements> => {
-    return new ExProtocolImplClass(impls);
-  };
+  export const accumulate =
+    <Protocol extends Object>(impls: Record<string, {}>) =>
+    <FuncName extends keyof Protocol>(
+      funcName: FuncName
+    ): Protocol[FuncName] => {
+      const f = (v: ExStruct, ...args: any[]): any => {
+        const impl: Record<FuncName, Function> = impls[v.__exStruct__] as any;
+        return impl[funcName](v, ...args);
+      };
+      return f as any as Protocol[FuncName];
+    };
 }

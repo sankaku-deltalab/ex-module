@@ -1,18 +1,19 @@
 import {ExProtocol} from '../../core/protocol';
 import {ExStruct} from '../../core/struct';
-import {OneOfExStruct, ImplSayForOneOfExS} from '../modules/one-of-ex-struct';
-import {
-  OneOfExStruct2,
-  ImplSayForOneOfExS2,
-} from '../modules/one-of-ex-struct2';
+import {SwampMan} from '../modules/swamp-man';
+import {Gentleman} from '../modules/gentleman';
 
-export interface SayProtocol<T extends ExStruct> {
-  say(v: T): string;
+export interface SayProtocol<Base extends ExStruct> {
+  greet<S extends Base>(v: S, target: string): S;
 }
 
-export const Say = ExProtocol.accumulate({
-  [OneOfExStruct.__exModule__]: new ImplSayForOneOfExS(),
-  [OneOfExStruct2.__exModule__]: new ImplSayForOneOfExS2(),
-});
+export namespace Say {
+  export type T = SwampMan.T | Gentleman.T;
 
-export type Saiable = OneOfExStruct.T | OneOfExStruct2.T;
+  const accumulate = ExProtocol.accumulate<SayProtocol<T>>({
+    [SwampMan.__exModule__]: new SwampMan.ImplSay(),
+    [Gentleman.__exModule__]: new Gentleman.ImplSay(),
+  });
+
+  export const say = accumulate('greet');
+}

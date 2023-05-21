@@ -97,53 +97,25 @@ end
 ```typescript
 // protocols/say.ts
 import {ExProtocol, ExStruct} from 'ex-module';
-import {OneOfExStruct, ImplSayForOneOfExS} from '../modules/one-of-ex-struct';
-import {
-  OneOfExStruct2,
-  ImplSayForOneOfExS2,
-} from '../modules/one-of-ex-struct2';
+import {SwampMan} from '../modules/swamp-man';
+import {Gentleman} from '../modules/gentleman';
 
-export interface SayProtocol<T extends ExStruct> {
-  say(v: T): string;
+export interface SayProtocol<Base extends ExStruct> {
+  greet<S extends Base>(v: S, target: string): S;
 }
 
-export const Say = ExProtocol.accumulate({
-  [OneOfExStruct.__exModule__]: new ImplSayForOneOfExS(),
-  [OneOfExStruct2.__exModule__]: new ImplSayForOneOfExS2(),
-});
+export namespace Say {
+  export type T = SwampMan.T | Gentleman.T;
 
-export const Saiable = OneOfExStruct.T | OneOfExStruct2.T;
+  const accumulate = ExProtocol.accumulate<SayProtocol<T>>({
+    [SwampMan.__exModule__]: new SwampMan.ImplSay(),
+    [Gentleman.__exModule__]: new Gentleman.ImplSay(),
+  });
 
-// modules/one-of-ex-struct.ts
-import {
-  DefExStruct,
-  ExStructDef,
-  verifyExModuleForStruct,
-} from 'ex-module';
-import {SayProtocol} from '../protocols/say';
-
-const modId = 'MyApp.Modules.OneOfExStruct';
-type ModId = typeof modId;
-
-export namespace OneOfExStruct {
-  export const __exModule__ = modId;
-  export const __meta__ = ExStructDef.meta<ModId, T>(OneOfExStruct);
-  export type T = DefExStruct<ModId, {name: string}>;
-
-  export function create(name: string): T {
-    return __meta__.gen({name});
-  }
-}
-verifyExModuleForStruct<ModId, OneOfExStruct.T>(OneOfExStruct);
-
-// defimpl
-export class ImplSayForOneOfExS implements SayProtocol<OneOfExStruct.T> {
-  say(v: OneOfExStruct.T): string {
-    return 'Im ' + v.name;
-  }
+  export const say = accumulate('greet');
 }
 
-// modules/one-of-ex-struct.ts
+// modules/gentleman.ts
 import {
   DefExStruct,
   ExStructDef,
@@ -151,40 +123,69 @@ import {
 } from 'ex-module';
 import {SayProtocol} from '../protocols/say';
 
-const modId = 'MyApp.Modules.OneOfExStruct2';
+const modId = 'MyApp.Modules.Gentleman';
 type ModId = typeof modId;
 
-export namespace OneOfExStruct2 {
+export namespace Gentleman {
   export const __exModule__ = modId;
-  export const __meta__ = ExStructDef.meta<ModId, T>(OneOfExStruct2);
+  export const __meta__ = ExStructDef.meta<ModId, T>(Gentleman);
   export type T = DefExStruct<ModId, {greed: string}>;
 
   export function create(greed: string): T {
     return __meta__.gen({greed});
   }
-}
-verifyExModuleForStruct<ModId, OneOfExStruct2.T>(OneOfExStruct2);
 
-// defimpl
-export class ImplSayForOneOfExS2 implements SayProtocol<OneOfExStruct2.T> {
-  say(v: OneOfExStruct2.T): string {
-    return v.greed + ' Sir.';
+  export class ImplSay implements SayProtocol<T> {
+    greet<S extends T>(v: S, _target: string): S {
+      console.log(`${v.greed}, Sir.`);
+      return v;
+    }
   }
 }
+verifyExModuleForStruct<ModId, Gentleman.T>(Gentleman);
+
+// modules/swamp-man.ts
+import {
+  DefExStruct,
+  ExStructDef,
+  verifyExModuleForStruct,
+} from 'ex-module';
+import {SayProtocol} from '../protocols/say';
+
+const modId = 'MyApp.Modules.SwampMan';
+type ModId = typeof modId;
+
+export namespace SwampMan {
+  export const __exModule__ = modId;
+  export const __meta__ = ExStructDef.meta<ModId, T>(SwampMan);
+  export type T = DefExStruct<ModId, {name: string}>;
+
+  export function create(name: string): T {
+    return __meta__.gen({name});
+  }
+
+  export class ImplSay implements SayProtocol<T> {
+    greet<S extends T>(v: S, target: string): S {
+      console.log(`Hello ${target}. Im ${v.name}.`);
+      return {...v, name: target};
+    }
+  }
+}
+verifyExModuleForStruct<ModId, SwampMan.T>(SwampMan);
 
 // usage.ts
-import {OneOfExStruct} from './modules/one-of-ex-struct';
-import {OneOfExStruct2} from './modules/one-of-ex-struct2';
+import {Gentleman} from './modules/gentleman';
+import {SwampMan} from './modules/swamp-man';
 import {Say} from './protocols/say';
 
 console.log(ExampleModule.greet('Me'));
 
-const cat = OneOfExStruct.create('souseki');
-console.log(Say.of(cat).say(cat));
+const gentleman = Gentleman.create('Hello');
+const newGentleman = Say.say(gentleman, 'unknown human');
 
-const dog = OneOfExStruct2.create('Wan');
-console.log(Say.of(dog).say(dog));
+const swampMan = SwampMan.create('mud');
+const newSwampMan = Say.say(swampMan, 'gentleman');
 
-const dogOrCat: Saiable = cat;
-console.log(Say.of(dogOrCat).say(dogOrCat));
+const anyMan: Say.T = swampMan as Say.T;
+const newAnyMan = Say.say(anyMan, 'who');
 ```
