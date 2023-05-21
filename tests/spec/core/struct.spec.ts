@@ -37,4 +37,18 @@ describe('ExStruct', () => {
 
     expect(r).toBe('Hi cat.');
   });
+
+  test('can use builtin isInstance', () => {
+    const struct = ModOfStruct.__meta__.gen({name: 'cat'});
+    const fakeStruct = {
+      __exStruct__: 'ExModule.Tests.Spec.Core.Module.ModOfStruct',
+    };
+    const notStruct = {
+      __exStruct: 'Not.Struct',
+    };
+
+    expect(ModOfStruct.__meta__.isInstance(struct)).toBe(true);
+    expect(ModOfStruct.__meta__.isInstance(fakeStruct)).toBe(true);
+    expect(ModOfStruct.__meta__.isInstance(notStruct)).toBe(false);
+  });
 });
