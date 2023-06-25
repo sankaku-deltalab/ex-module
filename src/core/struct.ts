@@ -51,10 +51,10 @@ export namespace ExStructDef {
     <ModId extends string, Struct extends ExStruct<ModId>>(
       mod: ExModule<ModId>
     ) =>
-    (v: Omit<Struct, '__exStruct__'>): Struct => {
+    <S extends Struct = Struct>(v: Omit<S, '__exStruct__'>): S => {
       return {
         ...v,
         __exStruct__: mod.__exModule__,
-      } as Struct;
+      } as S;
     };
 }
