@@ -1,9 +1,8 @@
-import {ExProtocol} from '../../core/protocol';
-import {ExStruct} from '../../core/struct';
+import {ExProtocol} from '@dark-elixir/ex-module';
 import {ImplSayForSwampMan, SwampMan} from '../modules/swamp-man';
 import {Gentleman, ImplSayForGentleman} from '../modules/gentleman';
 
-export interface SayProtocol<Base extends ExStruct> {
+export interface SayProtocol<Base> {
   /**
    * Play greeting and update self.
    *

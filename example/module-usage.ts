@@ -1,4 +1,4 @@
-import {ExModuleDef} from '../core/module';
+import {ExModuleDef} from '@dark-elixir/ex-module';
 
 // defmodule ------
 export namespace ExampleModule {

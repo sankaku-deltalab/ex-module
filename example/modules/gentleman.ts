@@ -1,4 +1,4 @@
-import {ExStructDef} from '../../core/struct';
+import {ExStructDef} from '@dark-elixir/ex-module';
 import {SayProtocol} from '../protocols/say';
 
 export namespace Gentleman {
