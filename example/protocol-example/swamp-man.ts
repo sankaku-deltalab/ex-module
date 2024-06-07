@@ -1,5 +1,5 @@
 import {ExStructDef} from '@dark-elixir/ex-module';
-import {SayProtocol} from './say';
+import {GreetableProtocol} from './greetable';
 
 const moduleName = 'ExModuleExample.ProtocolExample.SwampMan';
 
@@ -21,9 +21,9 @@ export namespace SwampMan {
 ExStructDef.verify<SwampMan>(SwampMan);
 
 // defimpl ------
-export class ImplSayForSwampMan implements SayProtocol<SwampMan> {
-  greet<S extends SwampMan>(v: S, target: string): S {
+export class ImplSayForSwampMan implements GreetableProtocol<SwampMan> {
+  greet(v: SwampMan, target: string): SwampMan {
     console.log(`Hello ${target}. Im ${v.name}.`);
-    return {...v, name: target};
+    return SwampMan.create(target);
   }
 }

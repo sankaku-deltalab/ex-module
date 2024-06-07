@@ -12,7 +12,7 @@ Replicate the module system of [Elixir](https://elixir-lang.org) to achieve poly
 
 ```elixir
 # In Elixir
-defmodule MyApp.Modules.ExampleModule do
+defmodule ExModuleExample.ModuleExample.ExampleModule do
   def greet(name) when is_bitstring(name) do
     "Hi #{name}."
   end
@@ -20,12 +20,11 @@ end
 ```
 
 ```typescript
-// modules/example-module.ts
-import {ExModuleDef} from 'ex-module';
+import {ExModuleDef} from '@dark-elixir/ex-module';
 
 // defmodule ------
 export namespace ExampleModule {
-  export const __exModule__ = 'MyApp.Modules.ExampleModule';
+  export const __exModule__ = 'ExModuleExample.ModuleExample.ExampleModule';
 
   export function greet(name: string): string {
     return `Hi ${name}.`;
@@ -33,8 +32,9 @@ export namespace ExampleModule {
 }
 ExModuleDef.verify(ExampleModule);
 
-// use module ------
+// use module
 console.log(ExampleModule.greet('Me'));
+
 ```
 
 ### defstruct
@@ -44,37 +44,38 @@ console.log(ExampleModule.greet('Me'));
 defmodule MyApp.Modules.ExampleStruct do
   defstruct [:name]
 
-  def greet(%__MODULE__{name}) do
+  def greet(%__MODULE__{name: name}) do
     "Hi #{name}."
   end
 end
 ```
 
 ```typescript
-// modules/example-struct.ts
-import {ExStructDef} from 'ex-module';
+import {ExStructDef} from '@dark-elixir/ex-module';
+
+const moduleName = 'ExModuleExample.StructExample.ExampleStruct';
+
+export type ExampleStruct = ExStructDef.DefExStruct<
+  typeof moduleName,
+  {
+    name: string;
+  }
+>;
 
 // defmodule, defstruct ------
 export namespace ExampleStruct {
-  export const __exModule__ = 'MyApp.Modules.ExampleStruct';
-  export const __meta__ = ExStructDef.meta<T>(ExampleStruct);
+  export const __exModule__ = moduleName;
+  export const __meta__ = ExStructDef.meta<ExampleStruct>(ExampleStruct);
 
-  export type T = ExStructDef.DefExStruct<
-    typeof __exModule__,
-    {
-      name: string;
-    }
-  >;
-
-  export function create(name: string): T {
+  export function create(name: string): ExampleStruct {
     return __meta__.gen({name});
   }
 
-  export function greet({name}: T): string {
+  export function greet({name}: ExampleStruct): string {
     return `Hi ${name}.`;
   }
 }
-ExStructDef.verify<ExampleStruct.T>(ExampleStruct);
+ExStructDef.verify<ExampleStruct>(ExampleStruct);
 
 // use module ------
 const me = ExampleStruct.create('Me');
@@ -85,140 +86,120 @@ console.log(ExampleStruct.greet(me));
 
 ```elixir
 # in Elixir
-defprotocol Say do
-  @spec type(t) :: String.t()
-  def say(v)
+defprotocol ExModuleExample.ProtocolExample.Greetable do
+  @spec greet(t, String.t()) :: t
+  def greet(v, target)
 end
 
-defmodule Gentleman do
+defmodule ExModuleExample.ProtocolExample.Gentleman do
   defstruct [:greet]
+end
 
-  defimpl Say, for: Gentleman do
-    def greet(%Gentleman{name}, target), do
-      IO.inspect("#{greed}, Sir.")
-    end
+defimpl ExModuleExample.ProtocolExample.Greetable, for: ExModuleExample.ProtocolExample.Gentleman do
+  alias ExModuleExample.ProtocolExample.Gentleman
+
+  @spec greet(Gentleman.t(), String.t()) :: Gentleman.t()
+  def greet(%Gentleman{greet: greet} = v, target) do
+    IO.inspect("#{greet}, #{target}.")
+    v
   end
 end
 
-defmodule SwampMan do
+defmodule ExModuleExample.ProtocolExample.SwampMan do
   defstruct [:name]
+end
 
-  defimpl Say, for: SwampMan do
-    def greet(%SwampMan{name}, target) do
-      IO.inspect("Hello #{target}. Im #{name}.")
-    end
+defimpl ExModuleExample.ProtocolExample.Greetable, for: ExModuleExample.ProtocolExample.SwampMan do
+  alias ExModuleExample.ProtocolExample.SwampMan
+
+  @spec greet(SwampMan.t(), String.t()) :: SwampMan.t()
+  def greet(%SwampMan{name: name} = v, target) do
+    IO.inspect("Hello #{target}. Im #{name}.")
+    v
   end
 end
 ```
 
 ```typescript
-// protocols/say.ts
-import {ExProtocol, ExStruct} from 'ex-module';
-import {ImplSayForSwampMan, SwampMan} from '../modules/swamp-man';
-import {Gentleman, ImplSayForGentleman} from '../modules/gentleman';
+// protocol-examples/greetable.ts
+import {ExProtocol} from '@dark-elixir/ex-module';
+import {ImplSayForSwampMan, SwampMan} from './swamp-man';
+import {Gentleman, ImplSayForGentleman} from './gentleman';
 
-export interface SayProtocol<Base extends ExStruct> {
-  /**
-   * Play greeting and update self.
-   *
-   * @param v Self.
-   * @param target Greeting target.
-   */
-  greet<S extends Base>(v: S, target: string): S;
-}
+export type Greetable = SwampMan | Gentleman;
 
-export namespace Say {
-  export type T = SwampMan.T | Gentleman.T;
-
-  const genMethod = ExProtocol.accumulate<SayProtocol<T>>({
+export namespace Greetable {
+  const genMethod = ExProtocol.accumulate<GreetableProtocol<Greetable>>({
     [SwampMan.__exModule__]: new ImplSayForSwampMan(),
     [Gentleman.__exModule__]: new ImplSayForGentleman(),
   });
 
-  /**
-   * Play greeting and update self.
-   *
-   * @param v Self.
-   * @param target Greeting target.
-   */
   export const greet = genMethod('greet');
 }
 
-// modules/gentleman.ts
-import {ExStructDef} from 'ex-module';
-import {SayProtocol} from '../protocols/say';
+export interface GreetableProtocol<Base> {
+  greet(v: Base, target: string): Base;
+}
+
+// protocol-examples/gentleman.ts
+import {ExStructDef} from '@dark-elixir/ex-module';
+import {GreetableProtocol} from './greetable';
+
+const moduleName = 'ExModuleExample.ProtocolExample.Gentleman';
+
+export type Gentleman = ExStructDef.DefExStruct<
+  typeof moduleName,
+  {
+    greed: string;
+  }
+>;
 
 export namespace Gentleman {
-  export const __exModule__ = 'MyApp.Modules.Gentleman';
-  export const __meta__ = ExStructDef.meta<T>(Gentleman);
+  export const __exModule__ = moduleName;
+  export const __meta__ = ExStructDef.meta<Gentleman>(Gentleman);
 
-  export type T = ExStructDef.DefExStruct<
-    typeof __exModule__,
-    {
-      greed: string;
-    }
-  >;
-
-  export function create(greed: string): T {
+  export function create(greed: string): Gentleman {
     return __meta__.gen({greed});
   }
 }
-ExStructDef.verify<Gentleman.T>(Gentleman);
+ExStructDef.verify<Gentleman>(Gentleman);
 
 // defimpl ------
-type T = Gentleman.T;
-export class ImplSayForGentleman implements SayProtocol<T> {
-  greet<S extends T>(v: S, target: string): S {
-    console.log(`${v.greed}, Sir ${target}.`);
+export class ImplSayForGentleman implements GreetableProtocol<Gentleman> {
+  greet(v: Gentleman, target: string): Gentleman {
+    console.log(`${v.greed}, ${target}.`);
     return v;
   }
 }
 
-// modules/swamp-man.ts
-import {ExStructDef} from 'ex-module';
-import {SayProtocol} from '../protocols/say';
+// protocol-examples/swamp-man.ts
+import {ExStructDef} from '@dark-elixir/ex-module';
+import {GreetableProtocol} from './greetable';
+
+const moduleName = 'ExModuleExample.ProtocolExample.SwampMan';
+
+export type SwampMan = ExStructDef.DefExStruct<
+  typeof moduleName,
+  {
+    name: string;
+  }
+>;
 
 export namespace SwampMan {
-  export const __exModule__ = 'MyApp.Modules.SwampMan';
-  export const __meta__ = ExStructDef.meta<T>(SwampMan);
+  export const __exModule__ = moduleName;
+  export const __meta__ = ExStructDef.meta<SwampMan>(SwampMan);
 
-  export type T = ExStructDef.DefExStruct<
-    typeof __exModule__,
-    {
-      name: string;
-    }
-  >;
-
-  export function create(name: string): T {
+  export function create(name: string): SwampMan {
     return __meta__.gen({name});
   }
 }
-ExStructDef.verify<SwampMan.T>(SwampMan);
+ExStructDef.verify<SwampMan>(SwampMan);
 
 // defimpl ------
-type T = SwampMan.T;
-export class ImplSayForSwampMan implements SayProtocol<T> {
-  greet<S extends T>(v: S, target: string): S {
+export class ImplSayForSwampMan implements GreetableProtocol<SwampMan> {
+  greet(v: SwampMan, target: string): SwampMan {
     console.log(`Hello ${target}. Im ${v.name}.`);
-    return {...v, name: target};
+    return SwampMan.create(target);
   }
 }
-
-
-// usage.ts
-import {Gentleman} from './modules/gentleman';
-import {SwampMan} from './modules/swamp-man';
-import {Say} from './protocols/say';
-
-const gentleman = Gentleman.create('Hello');
-const newGentleman = Say.greet(gentleman, 'unknown human');
-console.log(newGentleman);
-
-const swampMan = SwampMan.create('mud');
-const newSwampMan = Say.greet(swampMan, 'gentleman');
-console.log(newSwampMan);
-
-const anyMan: Say.T = swampMan as Say.T;
-const newAnyMan = Say.greet(anyMan, 'who');
-console.log(newAnyMan);
 ```

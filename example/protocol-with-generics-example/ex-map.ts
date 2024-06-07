@@ -1,5 +1,5 @@
 import {ExStructDef} from '@dark-elixir/ex-module';
-import {EnumerableProtocol} from './enumerable';
+import {ExEnumerableProtocol} from './ex-enumerable';
 
 const moduleName = 'ExModuleExample.ProtocolWithGenericsExample.ExMap';
 
@@ -30,7 +30,7 @@ ExStructDef.verify<ExMap<string, unknown>>(ExMap);
 
 // defimpl ------
 export class ImplEnumerableForExList
-  implements EnumerableProtocol<typeof moduleName, [string, unknown]>
+  implements ExEnumerableProtocol<typeof moduleName, [string, unknown]>
 {
   toArray<I extends [string, unknown]>(v: MaybeExMap1<I>): I[] {
     return Object.entries(v.items) as I[];

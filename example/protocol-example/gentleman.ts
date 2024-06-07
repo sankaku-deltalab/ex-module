@@ -1,5 +1,5 @@
 import {ExStructDef} from '@dark-elixir/ex-module';
-import {SayProtocol} from './say';
+import {GreetableProtocol} from './greetable';
 
 const moduleName = 'ExModuleExample.ProtocolExample.Gentleman';
 
@@ -21,9 +21,9 @@ export namespace Gentleman {
 ExStructDef.verify<Gentleman>(Gentleman);
 
 // defimpl ------
-export class ImplSayForGentleman implements SayProtocol<Gentleman> {
-  greet<S extends Gentleman>(v: S, target: string): S {
-    console.log(`${v.greed}, Sir ${target}.`);
+export class ImplSayForGentleman implements GreetableProtocol<Gentleman> {
+  greet(v: Gentleman, target: string): Gentleman {
+    console.log(`${v.greed}, ${target}.`);
     return v;
   }
 }

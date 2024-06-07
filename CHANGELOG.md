@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2023-7-14
+
+### Changed
+
+- Enable struct with generics.
+
 ## [0.2.1] - 2023-05-21
 
 ### Changed
@@ -28,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add ExStruct
 - Add ExProtocol
 
-[unreleased]: https://github.com/sankaku-deltalab/ex-module/compare/0.2.1...HEAD
+[unreleased]: https://github.com/sankaku-deltalab/ex-module/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/sankaku-deltalab/ex-module/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/sankaku-deltalab/ex-module/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/sankaku-deltalab/ex-module/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/sankaku-deltalab/ex-module/releases/tag/0.1.0

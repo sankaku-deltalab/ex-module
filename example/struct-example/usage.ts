@@ -1,6 +1,6 @@
 import {ExStructDef} from '@dark-elixir/ex-module';
 
-const moduleName = 'ExModuleExample.ModuleExample.ExampleModule';
+const moduleName = 'ExModuleExample.StructExample.ExampleStruct';
 
 export type ExampleStruct = ExStructDef.DefExStruct<
   typeof moduleName,
