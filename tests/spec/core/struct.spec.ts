@@ -1,54 +1,54 @@
 import {ExStruct} from '../../../src/core/struct';
 
-export namespace ModOfStruct {
-  export const __exModule__ = 'ExModule.Tests.Spec.Core.Module.ModOfStruct';
-  export const __meta__ = ExStruct.genMeta<T>(ModOfStruct);
+export type Person = ExStruct.DefStruct<
+  typeof Person.__exModule__,
+  {
+    name: string;
+  }
+>;
 
-  export type T = ExStruct.DefStruct<
-    typeof __exModule__,
-    {
-      name: string;
-    }
-  >;
+export namespace Person {
+  export const __exModule__ = 'ExModule.Tests.Spec.Core.Module.Person';
+  export const __meta__ = ExStruct.genMeta<Person>(Person);
 
-  export function create(name: string): T {
+  export function create(name: string): Person {
     return __meta__.gen({name});
   }
 
-  export function greet({name}: T): string {
-    return `Hi ${name}.`;
+  export function greet(p: Person): string {
+    return `Hi ${p.name}.`;
   }
 }
-ExStruct.verify<ModOfStruct.T>(ModOfStruct);
+ExStruct.verify<Person>(Person);
 
 describe('ExStruct', () => {
   test('can generate struct with builtin function', () => {
-    const struct = ModOfStruct.__meta__.gen({name: 'cat'});
+    const struct = Person.create('cat');
 
     expect(struct).toEqual({
-      __exStruct__: ModOfStruct.__exModule__,
+      __exStruct__: Person.__exModule__,
       name: 'cat',
     });
   });
 
   test('can call function with struct', () => {
-    const struct = ModOfStruct.__meta__.gen({name: 'cat'});
-    const r = ModOfStruct.greet(struct);
+    const struct = Person.create('cat');
+    const r = Person.greet(struct);
 
     expect(r).toBe('Hi cat.');
   });
 
   test('can use builtin isInstance', () => {
-    const struct = ModOfStruct.__meta__.gen({name: 'cat'});
+    const struct = Person.create('cat');
     const fakeStruct = {
-      __exStruct__: 'ExModule.Tests.Spec.Core.Module.ModOfStruct',
+      __exStruct__: 'ExModule.Tests.Spec.Core.Module.Person',
     };
     const notStruct = {
       __exStruct: 'Not.Struct',
     };
 
-    expect(ModOfStruct.__meta__.isInstance(struct)).toBe(true);
-    expect(ModOfStruct.__meta__.isInstance(fakeStruct)).toBe(true);
-    expect(ModOfStruct.__meta__.isInstance(notStruct)).toBe(false);
+    expect(Person.__meta__.isInstance(struct)).toBe(true);
+    expect(Person.__meta__.isInstance(fakeStruct)).toBe(true);
+    expect(Person.__meta__.isInstance(notStruct)).toBe(false);
   });
 });
