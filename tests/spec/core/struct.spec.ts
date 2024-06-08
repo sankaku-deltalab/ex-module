@@ -1,10 +1,10 @@
-import {ExStructDef} from '../../../src/core/struct';
+import {ExStruct} from '../../../src/core/struct';
 
 export namespace ModOfStruct {
   export const __exModule__ = 'ExModule.Tests.Spec.Core.Module.ModOfStruct';
-  export const __meta__ = ExStructDef.meta<T>(ModOfStruct);
+  export const __meta__ = ExStruct.genMeta<T>(ModOfStruct);
 
-  export type T = ExStructDef.DefExStruct<
+  export type T = ExStruct.DefStruct<
     typeof __exModule__,
     {
       name: string;
@@ -19,7 +19,7 @@ export namespace ModOfStruct {
     return `Hi ${name}.`;
   }
 }
-ExStructDef.verify<ModOfStruct.T>(ModOfStruct);
+ExStruct.verify<ModOfStruct.T>(ModOfStruct);
 
 describe('ExStruct', () => {
   test('can generate struct with builtin function', () => {

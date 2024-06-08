@@ -1,6 +1,6 @@
 export type ExModule<ModId extends string> = {__exModule__: ModId};
 
-export namespace ExModuleDef {
+export namespace ExModule {
   export const verify = <ModId extends string>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mod: ExModule<ModId> & {__meta__?: never}

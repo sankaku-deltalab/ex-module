@@ -18,14 +18,14 @@ export type ExModuleForStruct<
   };
 };
 
-export namespace ExStructDef {
+export namespace ExStruct {
   type ModIdOf<S extends ExStruct> = S['__exStruct__'];
 
-  export type DefExStruct<ModId extends string, St extends {}> = {
+  export type DefStruct<ModId extends string, St extends {}> = {
     __exStruct__: ModId;
   } & St;
 
-  export const meta = <Struct extends ExStruct>(
+  export const genMeta = <Struct extends ExStruct>(
     mod: ExModule<ModIdOf<Struct>>
   ) => {
     return {

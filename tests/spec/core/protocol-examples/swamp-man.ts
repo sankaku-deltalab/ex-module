@@ -1,8 +1,8 @@
 import {ExProtocol} from '../../../../src/core/protocol';
-import {ExStructDef} from '../../../../src/core/struct';
+import {ExStruct} from '../../../../src/core/struct';
 import {SayProtocol, Sayable} from './sayable';
 
-export type SwampMan = ExStructDef.DefExStruct<
+export type SwampMan = ExStruct.DefStruct<
   typeof SwampMan.__exModule__,
   {
     originalId: string;
@@ -13,7 +13,7 @@ export type SwampMan = ExStructDef.DefExStruct<
 
 export namespace SwampMan {
   export const __exModule__ = 'MyApp.Modules.SwampMan';
-  export const __meta__ = ExStructDef.meta<SwampMan>(SwampMan);
+  export const __meta__ = ExStruct.genMeta<SwampMan>(SwampMan);
 
   export function create(
     originalId: string,
@@ -23,7 +23,7 @@ export namespace SwampMan {
     return __meta__.gen({originalId, copiedCount, name});
   }
 }
-ExStructDef.verify<SwampMan>(SwampMan);
+ExStruct.verify<SwampMan>(SwampMan);
 
 // defimpl ------
 export class ImplSayForSwampMan
