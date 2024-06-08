@@ -51,7 +51,7 @@ export namespace ExStructDef {
     <ModId extends string, Struct extends ExStruct<ModId>>(
       mod: ExModule<ModId>
     ) =>
-    <S extends Struct = Struct>(v: Omit<S, '__exStruct__'>): S => {
+    <S extends Struct = Struct>(v: Omit<S, '__exStruct__' | symbol>): S => {
       return {
         ...v,
         __exStruct__: mod.__exModule__,
