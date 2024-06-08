@@ -22,11 +22,11 @@ ExStruct.verify<Gentleman>(Gentleman);
 
 // defimpl ------
 export class ImplSayForGentleman implements SayProtocol<Gentleman, string> {
-  greet<S extends Gentleman>(v: S, target: string): [string, S] {
+  greet(v: Gentleman, target: string): [string, Gentleman] {
     return [`${v.greet}, Sir ${target}.`, v];
   }
 
-  myId<S extends Gentleman>(v: S): string {
+  myId(v: Gentleman): string {
     return v.id;
   }
 }

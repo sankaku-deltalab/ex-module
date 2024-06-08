@@ -29,14 +29,14 @@ ExStruct.verify<SwampMan>(SwampMan);
 export class ImplSayForSwampMan
   implements SayProtocol<SwampMan, [string, number]>
 {
-  greet<S extends SwampMan>(v: S, target: string): [string, S] {
+  greet(v: SwampMan, target: string): [string, SwampMan] {
     return [
       `Hello ${target}. Im ${v.name}.`,
       {...v, name: target, copiedCount: v.copiedCount + 1},
     ];
   }
 
-  myId<S extends SwampMan>(v: S): [string, number] {
+  myId(v: SwampMan): [string, number] {
     return [v.originalId, v.copiedCount];
   }
 }

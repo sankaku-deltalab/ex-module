@@ -32,4 +32,11 @@ export namespace Sayable {
    * @param target Greeting target.
    */
   export const greet = __meta__.func('greet');
+
+  /**
+   * Get ID of self.
+   *
+   * @param v Self.
+   */
+  export const myId = __meta__.func('myId');
 }
