@@ -5,16 +5,6 @@ import {ExModuleForStruct, ExStruct} from './struct';
 type ProtocolKey = symbol;
 type StructModuleName = string;
 
-const exProtocolGenerics = Symbol('ExModule.ExProtocol.exProtocolGenerics');
-// const exProtocolType0 = Symbol('exProtocolType0');
-// const exProtocolType1 = Symbol('exProtocolType1');
-// const exProtocolType2 = Symbol('exProtocolType2');
-// const exProtocolType3 = Symbol('exProtocolType3');
-// const exProtocolType4 = Symbol('exProtocolType4');
-// const exProtocolType5 = Symbol('exProtocolType5');
-// const exProtocolType6 = Symbol('exProtocolType6');
-// const exProtocolType7 = Symbol('exProtocolType7');
-
 export namespace ExProtocol {
   type ExProtocolModule = {
     __meta__: ExProtocolModuleMeta<object>;
@@ -37,11 +27,18 @@ export namespace ExProtocol {
    * All protocol types should be defined by this type.
    * This type is used for only type checking.
    */
-  export type DefProtocolType<Key extends symbol, Generics = unknown> = {
-    [key in Key]: {
-      [exProtocolGenerics]: Generics;
-    };
+  export type DefProtocolType<
+    Key extends symbol,
+    Generics extends Record<string, unknown>
+  > = {
+    [key in Key]: Generics;
   };
+
+  export type ProtocolGenerics<
+    ProtocolKey extends symbol,
+    Impl extends DefProtocolType<ProtocolKey, any>,
+    Key extends string
+  > = Impl[ProtocolKey][Key];
 
   /**
    * Generate meta for the protocol.

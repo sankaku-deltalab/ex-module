@@ -26,18 +26,20 @@ export namespace SwampMan {
 ExStruct.verify<SwampMan>(SwampMan);
 
 // defimpl ------
-export class ImplSayForSwampMan
-  implements SayProtocol<SwampMan, [string, number]>
-{
-  greet(v: SwampMan, target: string): [string, SwampMan] {
+export class ImplSayForSwampMan implements SayProtocol<SwampMan> {
+  greet<S extends SwampMan>(v: S, target: string): [string, S] {
     return [
       `Hello ${target}. Im ${v.name}.`,
       {...v, name: target, copiedCount: v.copiedCount + 1},
     ];
   }
 
-  myId(v: SwampMan): [string, number] {
+  myId<S extends SwampMan>(v: S): Sayable.IdType<S> {
     return [v.originalId, v.copiedCount];
   }
+
+  // myId<S extends SwampMan>(v: S): [string, number] {
+  //   return [v.originalId, v.copiedCount];
+  // }
 }
 ExProtocol.registerImpl(Sayable, SwampMan, new ImplSayForSwampMan());

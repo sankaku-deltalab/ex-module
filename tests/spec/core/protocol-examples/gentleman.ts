@@ -21,12 +21,12 @@ export namespace Gentleman {
 ExStruct.verify<Gentleman>(Gentleman);
 
 // defimpl ------
-export class ImplSayForGentleman implements SayProtocol<Gentleman, string> {
-  greet(v: Gentleman, target: string): [string, Gentleman] {
-    return [`${v.greet}, Sir ${target}.`, v];
+export class ImplSayForGentleman implements SayProtocol<Gentleman> {
+  greet<S extends Gentleman>(v: S, target: string): [string, S] {
+    return [`${v.greet}, Sir ${target}.`, {...v, greet: v.greet}];
   }
 
-  myId(v: Gentleman): string {
+  myId<S extends Gentleman>(v: S): string {
     return v.id;
   }
 }
