@@ -21,3 +21,4 @@ export namespace ExEnumerable {
     return v(s).toArray(args1, args2);
   }
 }
+ExProtocol.verifyModuleType(ExEnumerable);

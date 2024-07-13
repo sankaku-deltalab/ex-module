@@ -45,3 +45,4 @@ export namespace Sayable {
     return v(s).myId();
   }
 }
+ExProtocol.verifyModuleType(Sayable);

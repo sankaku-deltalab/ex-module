@@ -26,10 +26,8 @@ export class ImplSayForGentleman
   implements SayableProtocol<string>
 {
   greet(target: string): [string, Sayable<string>] {
-    return [
-      `Hello ${target}. Im ${this.value.greet}.`,
-      Gentleman.create(target, this.value.greet),
-    ];
+    const v = this.value;
+    return [`Hello ${target}. Im ${v.greet}.`, v];
   }
 
   myId(): string {

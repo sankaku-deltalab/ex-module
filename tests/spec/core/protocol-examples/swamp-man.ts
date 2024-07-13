@@ -31,18 +31,16 @@ export class ImplSayForSwampMan
   implements SayableProtocol<[string, number]>
 {
   greet(target: string): [string, Sayable<[string, number]>] {
+    const v = this.value;
     return [
-      `Hello ${target}. Im ${this.value.name}.`,
-      SwampMan.create(
-        this.value.originalId,
-        this.value.copiedCount + 1,
-        target
-      ),
+      `Hello ${target}. Im ${v.name}.`,
+      SwampMan.create(v.originalId, v.copiedCount + 1, target),
     ];
   }
 
   myId(): [string, number] {
-    return [this.value.originalId, this.value.copiedCount];
+    const v = this.value;
+    return [v.originalId, v.copiedCount];
   }
 }
 ExProtocol.registerProtocolImpl(Sayable, SwampMan, ImplSayForSwampMan);
