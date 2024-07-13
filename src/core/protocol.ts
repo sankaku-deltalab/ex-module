@@ -73,7 +73,8 @@ export namespace ExProtocol {
     if (!protocolClass) {
       throw new Error('No protocol found for the given key.');
     }
-    return new protocolClass(struct) as PB;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return new protocolClass(struct) as any as PB;
   }
 
   //
