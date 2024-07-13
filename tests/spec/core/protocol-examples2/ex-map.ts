@@ -26,8 +26,4 @@ export class ImplExEnumerableForExMap<K extends string, V>
   }
 }
 
-ExProtocol.registerProtocolImpl(
-  ExEnumerable.key,
-  ExMap.__exModule__,
-  ImplExEnumerableForExMap
-);
+ExProtocol.registerProtocolImpl(ExEnumerable, ExMap, ImplExEnumerableForExMap);

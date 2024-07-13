@@ -36,8 +36,4 @@ export class ImplSayForGentleman
     return this.value.id;
   }
 }
-ExProtocol.registerProtocolImpl(
-  Sayable.key,
-  Gentleman.__exModule__,
-  ImplSayForGentleman
-);
+ExProtocol.registerProtocolImpl(Sayable, Gentleman, ImplSayForGentleman);

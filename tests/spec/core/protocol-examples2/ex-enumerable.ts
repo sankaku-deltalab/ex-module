@@ -10,7 +10,7 @@ export namespace ExEnumerable {
   export const key = Symbol('ExModule.MyApp.ExEnumerable');
 
   function v<T>(s: ExEnumerable<T>): ExEnumerableProtocol<T> {
-    return ExProtocol.getProtocolImpl<ExEnumerableProtocol<T>>(key, s);
+    return ExProtocol.getProtocolImpl<ExEnumerableProtocol<T>>(ExEnumerable, s);
   }
 
   export function toArray<T>(

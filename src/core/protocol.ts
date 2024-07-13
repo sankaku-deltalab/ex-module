@@ -1,7 +1,8 @@
+import {ExModule} from './module';
 import {ExStruct} from './struct';
 
 type ProtocolKey = symbol;
-type ProtocolImplKey = string;
+type StructModuleName = string;
 
 export namespace ExProtocol {
   //
@@ -16,6 +17,10 @@ export namespace ExProtocol {
     }
   }
 
+  type ExModuleForProtocol<PKey extends ProtocolKey = ProtocolKey> = {
+    key: PKey;
+  };
+
   //
   // state
   //
@@ -23,14 +28,33 @@ export namespace ExProtocol {
   // [ProtocolKey, ProtocolImplKey] => ProtocolBase
   const protocolMap = new Map<
     ProtocolKey,
-    Map<ProtocolImplKey, typeof ProtocolBase<any>>
+    Map<StructModuleName, typeof ProtocolBase<any>>
   >();
 
   export function registerProtocolImpl(
-    protocolKey: ProtocolKey,
-    implKey: ProtocolImplKey,
+    protocolModule: ExModuleForProtocol,
+    structModule: ExModule<string>,
     impl: typeof ProtocolBase<any>
-  ) {
+  ): void {
+    registerProtocolImplRaw(
+      protocolModule.key,
+      structModule.__exModule__,
+      impl
+    );
+  }
+
+  export function getProtocolImpl<PB, S extends ExStruct = ExStruct>(
+    protocolModule: ExModuleForProtocol,
+    struct: S
+  ): PB {
+    return getProtocolImplRaw(protocolModule.key, struct);
+  }
+
+  function registerProtocolImplRaw(
+    protocolKey: ProtocolKey,
+    implKey: StructModuleName,
+    impl: typeof ProtocolBase<any>
+  ): void {
     let implMap = protocolMap.get(protocolKey);
     if (!implMap) {
       implMap = new Map();
@@ -39,7 +63,7 @@ export namespace ExProtocol {
     implMap.set(implKey, impl);
   }
 
-  export function getProtocolImpl<PB, S extends ExStruct = ExStruct>(
+  function getProtocolImplRaw<PB, S extends ExStruct = ExStruct>(
     protocolKey: ProtocolKey,
     struct: S
   ): PB {
@@ -60,4 +84,8 @@ export namespace ExProtocol {
     PKey extends symbol,
     Generics extends unknown[]
   > = Partial<Record<PKey, Generics>> & ExStruct;
+
+  export const verifyModuleType = (_mod: ExModuleForProtocol): void => {
+    // do nothing because this function is used for type check
+  };
 }

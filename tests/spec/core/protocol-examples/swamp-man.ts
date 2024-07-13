@@ -45,8 +45,4 @@ export class ImplSayForSwampMan
     return [this.value.originalId, this.value.copiedCount];
   }
 }
-ExProtocol.registerProtocolImpl(
-  Sayable.key,
-  SwampMan.__exModule__,
-  ImplSayForSwampMan
-);
+ExProtocol.registerProtocolImpl(Sayable, SwampMan, ImplSayForSwampMan);

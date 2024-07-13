@@ -20,7 +20,7 @@ export namespace Sayable {
   export const key = Symbol('ExModule.Example.Say');
 
   function v<IdType>(s: Sayable<IdType>): SayableProtocol<IdType> {
-    return ExProtocol.getProtocolImpl<SayableProtocol<IdType>>(key, s);
+    return ExProtocol.getProtocolImpl<SayableProtocol<IdType>>(Sayable, s);
   }
 
   /**

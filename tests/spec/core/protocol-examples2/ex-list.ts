@@ -27,7 +27,7 @@ export class ImplExEnumerableForExList<T>
 }
 
 ExProtocol.registerProtocolImpl(
-  ExEnumerable.key,
-  ExList.__exModule__,
+  ExEnumerable,
+  ExList,
   ImplExEnumerableForExList
 );
