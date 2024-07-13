@@ -1,51 +1,47 @@
 import {ExProtocol} from '../../../../src/core/protocol';
 
-const sayKey = Symbol('ExModule.Example.Say');
-export type Sayable<IdType> = ExProtocol.DefProtocolType<
-  typeof sayKey,
-  {idType: IdType}
->;
+export type Sayable<IdType> = ExProtocol.DefType<typeof Sayable.key, [IdType]>;
 
-export interface SayProtocol<
-  Struct extends Sayable<unknown> = Sayable<unknown>
-> {
+export interface SayableProtocol<IdType> {
   /**
    * Play greeting and update self.
    *
-   * @param v Self.
    * @param target Greeting target.
    */
-  greet<S extends Struct>(v: S, target: string): [string, S];
+  greet(target: string): [string, Sayable<IdType>];
 
   /**
    * Get ID of self.
-   *
-   * @param v Self.
    */
-  myId<S extends Struct>(v: S): Sayable.IdType<S>;
+  myId(): IdType;
 }
 
 export namespace Sayable {
-  export const __meta__ = ExProtocol.genMeta<SayProtocol>(sayKey);
+  export const key = Symbol('ExModule.Example.Say');
 
-  export type IdType<S extends Sayable<unknown>> = ExProtocol.ProtocolGenerics<
-    typeof sayKey,
-    S,
-    'idType'
-  >;
+  function v<IdType>(s: Sayable<IdType>): SayableProtocol<IdType> {
+    return ExProtocol.getProtocolImpl<SayableProtocol<IdType>>(key, s);
+  }
 
   /**
    * Play greeting and update self.
    *
-   * @param v Self.
+   * @param s Self.
    * @param target Greeting target.
    */
-  export const greet = __meta__.func('greet');
+  export function greet<IdType>(
+    s: Sayable<IdType>,
+    target: string
+  ): [string, Sayable<IdType>] {
+    return v(s).greet(target);
+  }
 
   /**
    * Get ID of self.
    *
-   * @param v Self.
+   * @param s Self.
    */
-  export const myId = __meta__.func('myId');
+  export function myId<IdType>(s: Sayable<IdType>): IdType {
+    return v(s).myId();
+  }
 }

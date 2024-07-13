@@ -1,6 +1,6 @@
 import {ExProtocol} from '../../../../src/core/protocol';
 import {ExStruct} from '../../../../src/core/struct';
-import {SayProtocol, Sayable} from './sayable';
+import {Sayable, SayableProtocol} from './sayable';
 
 export type SwampMan = ExStruct.DefStruct<
   typeof SwampMan.__exModule__,
@@ -23,23 +23,30 @@ export namespace SwampMan {
     return __meta__.gen({originalId, copiedCount, name});
   }
 }
-ExStruct.verify<SwampMan>(SwampMan);
+ExStruct.verifyModuleType<SwampMan>(SwampMan);
 
 // defimpl ------
-export class ImplSayForSwampMan implements SayProtocol<SwampMan> {
-  greet<S extends SwampMan>(v: S, target: string): [string, S] {
+export class ImplSayForSwampMan
+  extends ExProtocol.ProtocolBase<SwampMan>
+  implements SayableProtocol<[string, number]>
+{
+  greet(target: string): [string, Sayable<[string, number]>] {
     return [
-      `Hello ${target}. Im ${v.name}.`,
-      {...v, name: target, copiedCount: v.copiedCount + 1},
+      `Hello ${target}. Im ${this.value.name}.`,
+      SwampMan.create(
+        this.value.originalId,
+        this.value.copiedCount + 1,
+        target
+      ),
     ];
   }
 
-  myId<S extends SwampMan>(v: S): Sayable.IdType<S> {
-    return [v.originalId, v.copiedCount];
+  myId(): [string, number] {
+    return [this.value.originalId, this.value.copiedCount];
   }
-
-  // myId<S extends SwampMan>(v: S): [string, number] {
-  //   return [v.originalId, v.copiedCount];
-  // }
 }
-ExProtocol.registerImpl(Sayable, SwampMan, new ImplSayForSwampMan());
+ExProtocol.registerProtocolImpl(
+  Sayable.key,
+  SwampMan.__exModule__,
+  ImplSayForSwampMan
+);

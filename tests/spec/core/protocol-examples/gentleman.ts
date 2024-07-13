@@ -1,6 +1,6 @@
 import {ExProtocol} from '../../../../src/core/protocol';
 import {ExStruct} from '../../../../src/core/struct';
-import {SayProtocol, Sayable} from './sayable';
+import {Sayable, SayableProtocol} from './sayable';
 
 export type Gentleman = ExStruct.DefStruct<
   typeof Gentleman.__exModule__,
@@ -18,16 +18,26 @@ export namespace Gentleman {
     return __meta__.gen({id, greet});
   }
 }
-ExStruct.verify<Gentleman>(Gentleman);
+ExStruct.verifyModuleType<Gentleman>(Gentleman);
 
 // defimpl ------
-export class ImplSayForGentleman implements SayProtocol<Gentleman> {
-  greet<S extends Gentleman>(v: S, target: string): [string, S] {
-    return [`${v.greet}, Sir ${target}.`, {...v, greet: v.greet}];
+export class ImplSayForGentleman
+  extends ExProtocol.ProtocolBase<Gentleman>
+  implements SayableProtocol<string>
+{
+  greet(target: string): [string, Sayable<string>] {
+    return [
+      `Hello ${target}. Im ${this.value.greet}.`,
+      Gentleman.create(target, this.value.greet),
+    ];
   }
 
-  myId<S extends Gentleman>(v: S): string {
-    return v.id;
+  myId(): string {
+    return this.value.id;
   }
 }
-ExProtocol.registerImpl(Sayable, Gentleman, new ImplSayForGentleman());
+ExProtocol.registerProtocolImpl(
+  Sayable.key,
+  Gentleman.__exModule__,
+  ImplSayForGentleman
+);
