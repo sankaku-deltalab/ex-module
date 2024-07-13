@@ -19,7 +19,7 @@ export namespace Person {
     return `Hi ${p.name}.`;
   }
 }
-ExStruct.verify<Person>(Person);
+ExStruct.verifyModuleType<Person>(Person);
 
 describe('ExStruct', () => {
   test('can generate struct with builtin function', () => {

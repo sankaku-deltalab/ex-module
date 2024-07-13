@@ -34,9 +34,8 @@ export namespace ExStruct {
     };
   };
 
-  export const verify = <Struct extends ExStruct>(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mod: ExModuleForStruct<ModIdOf<Struct>, Struct>
+  export const verifyModuleType = <Struct extends ExStruct>(
+    _mod: ExModuleForStruct<ModIdOf<Struct>, Struct>
   ): void => {
     // do nothing because this function is used for type check
   };
