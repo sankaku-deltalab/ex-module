@@ -27,7 +27,7 @@ export class ImplSayForGentleman
 {
   greet(target: string): [string, Sayable<string>] {
     const v = this.value;
-    return [`Hello ${target}. Im ${v.greet}.`, v];
+    return [`${v.greet}, Sir ${target}.`, v];
   }
 
   myId(): string {
