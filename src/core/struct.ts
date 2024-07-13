@@ -6,20 +6,20 @@ export type ExStruct<
   RawStructure extends {} = {}
 > = RawStructure & {__exStruct__: ModId};
 
-export type ExModuleForStruct<
-  ModId extends string,
-  RawStructure extends {}
-> = ExModule<ModId> & {
-  __meta__: {
-    isInstance: (
-      maybeStruct: unknown
-    ) => maybeStruct is ExStruct<ModId, RawStructure>;
-    gen: (v: RawStructure) => ExStruct<ModId, RawStructure>;
-  };
-};
-
 export namespace ExStruct {
   type ModIdOf<S extends ExStruct> = S['__exStruct__'];
+
+  type ExModuleForStruct<
+    ModId extends string,
+    RawStructure extends {}
+  > = ExModule<ModId> & {
+    __meta__: {
+      isInstance: (
+        maybeStruct: unknown
+      ) => maybeStruct is ExStruct<ModId, RawStructure>;
+      gen: (v: RawStructure) => ExStruct<ModId, RawStructure>;
+    };
+  };
 
   export type DefStruct<ModId extends string, St extends {}> = {
     __exStruct__: ModId;
