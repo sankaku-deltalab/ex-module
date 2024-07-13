@@ -7,7 +7,7 @@ namespace Mod {
     return `Hi ${name}.`;
   }
 }
-ExModule.verify(Mod);
+ExModule.verifyModuleType(Mod);
 
 describe('ExModule', () => {
   test('replicate defmodule and can define function', () => {
