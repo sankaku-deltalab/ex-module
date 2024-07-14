@@ -1,29 +1,26 @@
-import {ExStructDef} from '@dark-elixir/ex-module';
+import {ExStruct} from '@dark-elixir/ex-module';
 
-const moduleName = 'ExModuleExample.StructExample.ExampleStruct';
-
-export type ExampleStruct = ExStructDef.DefExStruct<
-  typeof moduleName,
+export type Person = ExStruct.DefStruct<
+  typeof Person.__exModule__,
   {
     name: string;
   }
 >;
 
-// defmodule, defstruct ------
-export namespace ExampleStruct {
-  export const __exModule__ = moduleName;
-  export const __meta__ = ExStructDef.meta<ExampleStruct>(ExampleStruct);
+export namespace Person {
+  export const __exModule__ = 'ExModule.Example.Person';
+  export const __meta__ = ExStruct.genMeta<Person>(Person);
 
-  export function create(name: string): ExampleStruct {
+  export function create(name: string): Person {
     return __meta__.gen({name});
   }
 
-  export function greet({name}: ExampleStruct): string {
-    return `Hi ${name}.`;
+  export function greet(p: Person): string {
+    return `Hi ${p.name}.`;
   }
 }
-ExStructDef.verify<ExampleStruct>(ExampleStruct);
+ExStruct.verifyModuleType<Person>(Person);
 
-// use module ------
-const me = ExampleStruct.create('Me');
-console.log(ExampleStruct.greet(me));
+// usage
+const me = Person.create('Me');
+console.log(Person.greet(me));

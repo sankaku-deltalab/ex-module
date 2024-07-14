@@ -1,5 +1,4 @@
-import {ExProtocol} from '../../../../src/core/protocol';
-import {ExStruct} from '../../../../src/core/struct';
+import {ExProtocol, ExStruct} from '@dark-elixir/ex-module';
 import {ExEnumerable, ExEnumerableProtocol} from './ex-enumerable';
 
 export type ExList<T> = ExStruct.DefStruct<
@@ -9,7 +8,7 @@ export type ExList<T> = ExStruct.DefStruct<
   ExEnumerable<T>;
 
 export namespace ExList {
-  export const __exModule__ = 'MyApp.Modules.ExList';
+  export const __exModule__ = 'ExModule.Example.ExList';
   export const __meta__ = ExStruct.genMeta<ExList<unknown>>(ExList);
 
   export function create<T>(list: T[]): ExList<T> {
@@ -21,11 +20,10 @@ export class ImplExEnumerableForExList<T>
   extends ExProtocol.ProtocolBase<ExList<T>>
   implements ExEnumerableProtocol<T>
 {
-  toArray(_args1: unknown, _args2: unknown): T[] {
-    return this.value.list;
+  map<U>(fn: (value: T) => U): U[] {
+    return this.value.list.map(fn);
   }
 }
-
 ExProtocol.registerProtocolImpl(
   ExEnumerable,
   ExList,
