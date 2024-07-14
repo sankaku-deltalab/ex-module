@@ -6,13 +6,19 @@ Forbidden dark Elixir of an alchemist
 
 Replicate the module system of [Elixir](https://elixir-lang.org) to achieve polymorphism in a serializable state.
 
+Implemented:
+
+- `defmodule`
+- `defstruct`
+- `defprotocol` and `defimpl`
+
 ## Usage
 
 ### defmodule
 
 ```elixir
 # In Elixir
-defmodule ExModuleExample.ModuleExample.ExampleModule do
+defmodule ExModule.Example.ExampleModule do
   def greet(name) when is_bitstring(name) do
     "Hi #{name}."
   end
@@ -20,19 +26,18 @@ end
 ```
 
 ```typescript
-import {ExModuleDef} from '@dark-elixir/ex-module';
+import {ExModule} from '@dark-elixir/ex-module';
 
-// defmodule ------
-export namespace ExampleModule {
-  export const __exModule__ = 'ExModuleExample.ModuleExample.ExampleModule';
+namespace ExampleModule {
+  export const __exModule__ = 'ExModule.Example.ExampleModule';
 
   export function greet(name: string): string {
     return `Hi ${name}.`;
   }
 }
-ExModuleDef.verify(ExampleModule);
+ExModule.verifyModuleType(ExampleModule);
 
-// use module
+// usage
 console.log(ExampleModule.greet('Me'));
 
 ```
@@ -41,7 +46,7 @@ console.log(ExampleModule.greet('Me'));
 
 ```elixir
 # In Elixir
-defmodule MyApp.Modules.ExampleStruct do
+defmodule ExModule.Example.Person do
   defstruct [:name]
 
   def greet(%__MODULE__{name: name}) do
@@ -51,155 +56,117 @@ end
 ```
 
 ```typescript
-import {ExStructDef} from '@dark-elixir/ex-module';
+import {ExStruct} from '@dark-elixir/ex-module';
 
-const moduleName = 'ExModuleExample.StructExample.ExampleStruct';
-
-export type ExampleStruct = ExStructDef.DefExStruct<
-  typeof moduleName,
+export type Person = ExStruct.DefStruct<
+  typeof Person.__exModule__,
   {
     name: string;
   }
 >;
 
-// defmodule, defstruct ------
-export namespace ExampleStruct {
-  export const __exModule__ = moduleName;
-  export const __meta__ = ExStructDef.meta<ExampleStruct>(ExampleStruct);
+export namespace Person {
+  export const __exModule__ = 'ExModule.Example.Person';
+  export const __meta__ = ExStruct.genMeta<Person>(Person);
 
-  export function create(name: string): ExampleStruct {
+  export function create(name: string): Person {
     return __meta__.gen({name});
   }
 
-  export function greet({name}: ExampleStruct): string {
-    return `Hi ${name}.`;
+  export function greet(p: Person): string {
+    return `Hi ${p.name}.`;
   }
 }
-ExStructDef.verify<ExampleStruct>(ExampleStruct);
+ExStruct.verifyModuleType<Person>(Person);
 
-// use module ------
-const me = ExampleStruct.create('Me');
-console.log(ExampleStruct.greet(me));
+// usage
+const me = Person.create('Me');
+console.log(Person.greet(me));
+
 ```
 
-### defprotocol, defimpl
+### defprotocol
 
 ```elixir
 # in Elixir
-defprotocol ExModuleExample.ProtocolExample.Greetable do
-  @spec greet(t, String.t()) :: t
-  def greet(v, target)
+defprotocol ExModule.Example.ExEnumerable do
+  def map(v, fn)
+end
+```
+
+```typescript
+import {ExProtocol} from '@dark-elixir/ex-module';
+
+export type ExEnumerable<T> = ExProtocol.DefType<typeof ExEnumerable.key, [T]>;
+
+export interface ExEnumerableProtocol<T> {
+  map<U>(fn: (value: T) => U): U[];
+}
+
+export namespace ExEnumerable {
+  export const key = Symbol('ExModule.Example.ExEnumerable');
+
+  function v<T>(s: ExEnumerable<T>): ExEnumerableProtocol<T> {
+    return ExProtocol.getProtocolImpl<ExEnumerableProtocol<T>>(ExEnumerable, s);
+  }
+
+  export function map<T, U>(s: ExEnumerable<T>, fn: (value: T) => U): U[] {
+    return v(s).map(fn);
+  }
+}
+ExProtocol.verifyModuleType(ExEnumerable);
+```
+
+### defimpl
+
+```elixir
+# in Elixir
+defmodule ExModule.Example.ExMap do
+  defstruct [:map]
 end
 
-defmodule ExModuleExample.ProtocolExample.Gentleman do
-  defstruct [:greet]
-end
+defimpl ExModule.Example.ExMap, for: ExModule.Example.ExEnumerable do
+  alias ExModule.Example.ExMap
 
-defimpl ExModuleExample.ProtocolExample.Greetable, for: ExModuleExample.ProtocolExample.Gentleman do
-  alias ExModuleExample.ProtocolExample.Gentleman
-
-  @spec greet(Gentleman.t(), String.t()) :: Gentleman.t()
-  def greet(%Gentleman{greet: greet} = v, target) do
-    IO.inspect("#{greet}, #{target}.")
-    v
-  end
-end
-
-defmodule ExModuleExample.ProtocolExample.SwampMan do
-  defstruct [:name]
-end
-
-defimpl ExModuleExample.ProtocolExample.Greetable, for: ExModuleExample.ProtocolExample.SwampMan do
-  alias ExModuleExample.ProtocolExample.SwampMan
-
-  @spec greet(SwampMan.t(), String.t()) :: SwampMan.t()
-  def greet(%SwampMan{name: name} = v, target) do
-    IO.inspect("Hello #{target}. Im #{name}.")
-    v
+  def map(%ExMap{map: map}, fn) do
+    Enum.map(map, fn)
   end
 end
 ```
 
 ```typescript
-// protocol-examples/greetable.ts
-import {ExProtocol} from '@dark-elixir/ex-module';
-import {ImplSayForSwampMan, SwampMan} from './swamp-man';
-import {Gentleman, ImplSayForGentleman} from './gentleman';
+import {ExProtocol, ExStruct} from '@dark-elixir/ex-module';
+import {ExEnumerable, ExEnumerableProtocol} from './ex-enumerable';
 
-export type Greetable = SwampMan | Gentleman;
+export type ExMap<K extends string, V> = ExStruct.DefStruct<
+  typeof ExMap.__exModule__,
+  {map: Record<K, V>}
+> &
+  ExEnumerable<[K, V]>;
 
-export namespace Greetable {
-  const genMethod = ExProtocol.accumulate<GreetableProtocol<Greetable>>({
-    [SwampMan.__exModule__]: new ImplSayForSwampMan(),
-    [Gentleman.__exModule__]: new ImplSayForGentleman(),
-  });
+export namespace ExMap {
+  export const __exModule__ = 'ExModule.Example.ExMap';
+  export const __meta__ = ExStruct.genMeta<ExMap<string, unknown>>(ExMap);
 
-  export const greet = genMethod('greet');
-}
-
-export interface GreetableProtocol<Base> {
-  greet(v: Base, target: string): Base;
-}
-
-// protocol-examples/gentleman.ts
-import {ExStructDef} from '@dark-elixir/ex-module';
-import {GreetableProtocol} from './greetable';
-
-const moduleName = 'ExModuleExample.ProtocolExample.Gentleman';
-
-export type Gentleman = ExStructDef.DefExStruct<
-  typeof moduleName,
-  {
-    greed: string;
-  }
->;
-
-export namespace Gentleman {
-  export const __exModule__ = moduleName;
-  export const __meta__ = ExStructDef.meta<Gentleman>(Gentleman);
-
-  export function create(greed: string): Gentleman {
-    return __meta__.gen({greed});
-  }
-}
-ExStructDef.verify<Gentleman>(Gentleman);
-
-// defimpl ------
-export class ImplSayForGentleman implements GreetableProtocol<Gentleman> {
-  greet(v: Gentleman, target: string): Gentleman {
-    console.log(`${v.greed}, ${target}.`);
-    return v;
+  export function create<K extends string, V>(map: Record<K, V>): ExMap<K, V> {
+    return __meta__.gen({map});
   }
 }
 
-// protocol-examples/swamp-man.ts
-import {ExStructDef} from '@dark-elixir/ex-module';
-import {GreetableProtocol} from './greetable';
-
-const moduleName = 'ExModuleExample.ProtocolExample.SwampMan';
-
-export type SwampMan = ExStructDef.DefExStruct<
-  typeof moduleName,
-  {
-    name: string;
-  }
->;
-
-export namespace SwampMan {
-  export const __exModule__ = moduleName;
-  export const __meta__ = ExStructDef.meta<SwampMan>(SwampMan);
-
-  export function create(name: string): SwampMan {
-    return __meta__.gen({name});
+export class ImplExEnumerableForExMap<K extends string, V>
+  extends ExProtocol.ProtocolBase<ExMap<K, V>>
+  implements ExEnumerableProtocol<[K, V]>
+{
+  map<U>(fn: (value: [K, V]) => U): U[] {
+    const items = Object.entries(this.value.map) as [K, V][];
+    return items.map(fn);
   }
 }
-ExStructDef.verify<SwampMan>(SwampMan);
+ExProtocol.registerProtocolImpl(ExEnumerable, ExMap, ImplExEnumerableForExMap);
 
-// defimpl ------
-export class ImplSayForSwampMan implements GreetableProtocol<SwampMan> {
-  greet(v: SwampMan, target: string): SwampMan {
-    console.log(`Hello ${target}. Im ${v.name}.`);
-    return SwampMan.create(target);
-  }
-}
+// usage
+const list1 = ExList.create([1, 2, 3]);
+const fnList1 = (value: number) => value * 2;
+const list1Array = ExEnumerable.map(list1, fnList1); // number[]
+console.log(list1Array);
 ```
